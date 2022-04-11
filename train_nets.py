@@ -11,19 +11,19 @@ import torch.nn as nn
 from nets.lp_lssim_loss import LpLssimLoss
 
 # parameter for net
-experiment_name = 'lp+lssim_se_sf_net_times30'
+experiment_name = 'lp+lssim_scse_sf_net_times20'
 gpu_device = "cuda:0"
 # gpu_device_for_parallel = [2, 3]
-learning_rate = 1e-4
-epochs = 30
-batch_size = 48
+learning_rate = 2e-4
+epochs = 20
+batch_size = 64
 display_step = 100
 shuffle = True
-attention = 'cse'
+attention = 'scse'
 # address
 project_addrsss = os.getcwd()
-train_dir = os.path.join(project_addrsss, "data", "coco2014", "train2014")
-val_dir = os.path.join(project_addrsss, "data", "coco2014", "val2014")
+train_dir = '../input/coco-2017-dataset/coco2017/train2017'
+val_dir = '../input/coco-2017-dataset/coco2017/val2017'
 log_address = os.path.join(project_addrsss, "nets", "train_record", experiment_name + "_log_file.txt")
 is_out_log_file = True
 parameter_address = os.path.join(project_addrsss, "nets", "parameters")
@@ -43,12 +43,12 @@ dataloders['train'] = DataLoader(
     image_datasets['train'],
     batch_size=batch_size,
     shuffle=shuffle,
-    num_workers=1)
+    num_workers=4)
 dataloders['val'] = DataLoader(
     image_datasets['val'],
     batch_size=batch_size,
     shuffle=shuffle,
-    num_workers=1)
+    num_workers=4)
 datasets_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 print_and_log("datasets size: {}".format(datasets_sizes), is_out_log_file, log_address)
 
@@ -60,7 +60,7 @@ model.to(gpu_device)
 # model = nn.DataParallel(model, device_ids=gpu_device_for_parallel)
 
 criterion = LpLssimLoss().to(gpu_device)
-optimizer = optim.Adam(model.parameters(), learning_rate)
+optimizer = optim.AdamW(model.parameters(), learning_rate)
 # optimizer = nn.DataParallel(optimizer, device_ids=gpu_device_for_parallel)
 
 
